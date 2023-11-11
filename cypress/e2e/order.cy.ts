@@ -4,7 +4,7 @@ describe('order product', () => {
 
 		if (cy.contains('Login')) {
 			cy.visit('/login')
-			cy.get('#email').type('bhargawanan@gmail.com')
+			cy.get('#email').type('teju@gmail.com')
 			cy.get('#password').type('12345678')
 			cy.get("button[type='submit']").click()
 
