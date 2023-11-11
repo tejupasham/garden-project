@@ -1,0 +1,70 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+// user model
+model User {
+  id        Int      @id @default(autoincrement())
+  name      String
+  email     String   @unique
+  password  String
+  role      Role     @default(user)
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  orders    Order[]
+
+  @@map("users")
+}
+
+// roles for user
+enum Role {
+  user
+  admin
+}
+
+// product model
+model Product {
+  id          Int      @id @default(autoincrement())
+  title       String
+  description String   @db.Text
+  imageUrl    String?  @map("image_url")
+  price       Float
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+  order       Order[]
+
+  @@map("products")
+}
+
+// order model
+model Order {
+  id        Int       @id @default(autoincrement())
+  userId    Int       @map("user_id")
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  productId Int       @map("product_id")
+  product   Product   @relation(fields: [productId], references: [id], onDelete: Cascade)
+  orderDate DateTime  @map("order_date")
+  payment   Payment[]
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+
+  @@map("orders")
+}
+
+// payment model
+model Payment {
+  id        Int      @id @default(autoincrement())
+  orderId   Int
+  order     Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  paymentId String?  @map("payment_id")
+  paid      Boolean  @default(false)
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("payments")
+}
