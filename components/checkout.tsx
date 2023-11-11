@@ -14,6 +14,7 @@ import { useRouter } from 'next/navigation'
 import { FormEvent, useState } from 'react'
 import { buttonVariants } from './ui/button'
 import { twMerge } from 'tailwind-merge'
+import { toast } from './ui/use-toast'
 
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLIC_KEY!, {
 	apiVersion: '2022-11-15',
@@ -39,7 +40,10 @@ function CheckoutForm(props: { orderId: number }) {
 
 			if (error) {
 				setProcessing(false)
-				return console.error('Error creating payment method:', error)
+				return toast({
+					variant: 'destructive',
+					title: 'Error creating payment method.',
+				})
 			} else {
 				const res = await axios.post('/api/checkout', {
 					paymentMethodId: paymentMethod.id,
@@ -55,7 +59,10 @@ function CheckoutForm(props: { orderId: number }) {
 					)
 					if (confirmationError) {
 						setProcessing(false)
-						return console.error('Error confirming payment:', confirmationError)
+						return toast({
+							variant: 'destructive',
+							title: 'Error confirming payment.',
+						})
 					} else {
 						const res = await axios.patch('/api/update-payment', {
 							id: paymentId,
@@ -71,7 +78,10 @@ function CheckoutForm(props: { orderId: number }) {
 			}
 		} catch (error) {
 			setProcessing(false)
-			console.error('Error processing payment:', error)
+			return toast({
+				variant: 'destructive',
+				title: `Error processing payment.`,
+			})
 		}
 	}
 
