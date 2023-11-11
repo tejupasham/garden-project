@@ -1,4 +1,4 @@
-describe('order product', () => {
+describe('order cancel', () => {
 	it('passes', () => {
 		cy.visit('/')
 
